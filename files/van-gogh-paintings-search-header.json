@@ -1,0 +1,16 @@
+{
+  "Content-Type": "text/html; charset=ISO-8859-1",
+  "Content-Security-Policy": "object-src 'none';base-uri 'self';script-src 'nonce-y3ku_MaYROZFkVz9p6nCPA' 'strict-dynamic' 'report-sample' 'unsafe-eval' 'unsafe-inline' https: http:;report-uri https://csp.withgoogle.com/csp/gws/xsrp",
+  "Accept-CH": "Sec-CH-Prefers-Color-Scheme",
+  "P3P": "CP='This is not a P3P policy! See g.co/p3phelp for more info.'",
+  "Content-Encoding": "gzip",
+  "Date": "Sat, 05 Apr 2025 23:55:28 GMT",
+  "Server": "gws",
+  "X-XSS-Protection": "0",
+  "X-Frame-Options": "SAMEORIGIN",
+  "Expires": "Sat, 05 Apr 2025 23:55:28 GMT",
+  "Cache-Control": "private",
+  "Set-Cookie": "AEC=AVcja2eQg6apOE9RDOWQ4NMdfollSBG_g-QwFKM8pqiQLIxUZkFUlA3O5w; expires=Thu, 02-Oct-2025 23:55:28 GMT; path=/; domain=.google.ca; Secure; HttpOnly; SameSite=lax, NID=523=nhdOPWRnFewIsLS_HVh4_flnozFxlWv_5dHFsp94vmfOhi-o4qYfXR-yygr818AKPisbCw_V8BBNTxGAF0pZsDFCH9wdOhQ4r-1KKZE4Fw45cF_5gMcHVUJ62yyHp6Ad-cRtzuFhEfu6MkZe4FWag,_LLX-krNpxw5MbjszBtysvLYF4F3IKDOyi2nho1uEQVLF2U02pS1hNCfw; expires=Sun, 05-Oct-2025 23:55:28 GMT; path=/; domain=.google.ca; HttpOnly",
+  "Alt-Svc": "h3=':443'; ma=2592000,h3-29=':443'; ma=2592000",
+  "Transfer-Encoding": "chunked"
+}
