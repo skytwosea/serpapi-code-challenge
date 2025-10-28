@@ -1,0 +1,1 @@
+(function(){var s='gigantic and quite silly URL';var ii=['_L_FkZ4qlAtyDwbkP49Pj0QU_79'];var r='';_setImagesSrc(ii,s,r);})();

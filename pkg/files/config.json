@@ -1,0 +1,22 @@
+{
+  "famous_painters":
+    {
+      "group_name": "artworks",
+      "tiles_tag_class": "wDYxhc",
+      "tiles_tag_attr": "kc:/visual_art/visual_artist:works",
+      "item_tag_class": "iELo6",
+      "name_tag_class": "pgNMRc",
+      "year_tag_class": "cxzHyb",
+      "image_tag_class": "taFZJe"
+    },
+  "famous_musicians":
+    {
+      "group_name": "albums",
+      "tiles_tag_class": "wDYxhc NFQFxe",
+      "tiles_tag_attr": "NULL",
+      "item_tag_class": "XRVJtc bnmjfe aKByQb",
+      "name_tag_class": "NULL",
+      "year_tag_class": "NULL",
+      "image_tag_class": "NULL"
+    }
+}
