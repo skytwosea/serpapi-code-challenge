@@ -28,7 +28,7 @@ class SerpScraperError(Exception):
     pass
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(slots=True)
 class SerpItem:
 
     _exclude: ClassVar[list[str]] = ["rank", "img_id"]
@@ -44,10 +44,13 @@ class SerpItem:
         return [f.name for f in fields(self) if f.name not in exclude]
 
     def to_map(self) -> dict[str, str|list[str]]:
-        return {
+        fieldmap = {
             attr: getattr(self, attr)
             for attr in self._fields(exclude=self._exclude)
         }
+        if not any(str(k).strip() for k in self.extensions):
+            fieldmap.pop("extensions", None)
+        return fieldmap
 
 
 @dataclass(frozen=True, slots=True)
@@ -62,7 +65,10 @@ class SerpResult:
                 sorted(self.items, key=lambda k: k.rank)
             ]
         }
-        return json.dumps(payload)
+        dump = json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=False)
+        if not dump.endswith("\n"):
+            dump += "\n"
+        return dump
 
 class SerpScraper:
     """"""
@@ -77,11 +83,9 @@ class SerpScraper:
         self.strategy = strategy
 
     def scrape(self, html: bytes) -> SerpResult:
-        # soup = BeautifulSoup(html, "html.parser")
         soup = self.strategy.prepare(html)
-        intermediate = self._extract_via_attrs(soup)
-        result = self.strategy.finalize(intermediate)
-        return result
+        unhydrated = self._extract_via_attrs(soup)
+        return self.strategy.finalize(unhydrated)
 
     def _extract_via_attrs(self, soup: BeautifulSoup) -> SerpResult:
         cfg = self.config
@@ -109,14 +113,12 @@ class SerpScraper:
             )
         return SerpResult(name=cfg.group_name, items=serp_items)
 
-
-
     def _extract_via_selectors(self, soup: BeautifulSoup) -> SerpResult:
-        ...
 
         """
         Use CSS selectors. Talk to Alfred.
         """
+        ...
 
     def _expect_tag(self, element: object) -> Tag:
         # helper to make Pyright stop complaining
