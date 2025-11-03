@@ -1,12 +1,15 @@
 # from __future__ import annotations
 from dataclasses import dataclass, fields
 from bs4 import BeautifulSoup
+
 # from bs4.filter import SoupStrainer
 from bs4.element import Tag, ResultSet
 from typing import ClassVar, Any, Generator, Mapping
+
 # from enum import StrEnum
 import re
 import json
+
 # from importlib.abc import Traversable
 from pkg.src.scraper_config_handler import TargetConfig
 import esprima
@@ -44,10 +47,10 @@ _RE_FN_PATTERN = re.compile(
     r"(?!\1|\2)(\b(?:ii|r|s)\b)\s*\)"
 )
 
-class StaticStrategy:
 
+class StaticStrategy:
     def __init__(self):
-        self.edits_map: dict[str, str]|None = None
+        self.edits_map: dict[str, str] | None = None
 
     def prepare(self, html: bytes) -> BeautifulSoup:
         # set self.edits_map before returning soup!
@@ -69,7 +72,11 @@ class StaticStrategy:
         return bool(_RE_FN_PATTERN.search(text))
 
     def _build_edits_map(self, soup: BeautifulSoup) -> dict[str, str]:
-        all_scripts = [s.get_text() for s in soup.find_all("script") if self._quickcheck(s.get_text())]
+        all_scripts = [
+            s.get_text()
+            for s in soup.find_all("script")
+            if self._quickcheck(s.get_text())
+        ]
         _emap = {}
         for script in all_scripts:
             _emap.update(self._extract_script_vars(str(script)))
@@ -90,7 +97,7 @@ class SrcInjectorVisitor(Visitor):
     def visit_VariableDeclarator(self, node):
         # Handle declarator: e.g., "var s = '...';" or "var ii = ['a','b'];"
         name = getattr(getattr(node, "id", None), "name", None)
-        init  = getattr(node, "init", None)
+        init = getattr(node, "init", None)
         tinit = getattr(init, "type", None)
 
         if name == "s" and tinit == "Literal" and isinstance(init.value, str):
@@ -103,6 +110,7 @@ class SrcInjectorVisitor(Visitor):
 
         # Important: continue traversal into children (id/init) if needed
         self.generic_visit(node)
+
 
 """
 Very good. Let us take the visitor apart slowly, then walk it against your concrete string, so that every moving part is seen, named, and understood.

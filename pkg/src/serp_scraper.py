@@ -1,12 +1,15 @@
 # from __future__ import annotations
 from dataclasses import dataclass, fields
 from bs4 import BeautifulSoup
+
 # from bs4.filter import SoupStrainer
 from bs4.element import Tag, ResultSet
 from typing import ClassVar, Any, Generator
+
 # from enum import StrEnum
 # import re
 import json
+
 # from importlib.abc import Traversable
 from pkg.src.scraper_config_handler import TargetConfig
 import esprima
@@ -25,12 +28,12 @@ above as the core set of abstractions.
 
 class SerpScraperError(Exception):
     """Generic error class for this module"""
+
     pass
 
 
 @dataclass(slots=True)
 class SerpItem:
-
     _exclude: ClassVar[list[str]] = ["rank", "img_id"]
 
     rank: int
@@ -40,13 +43,12 @@ class SerpItem:
     img_id: str
     image: str
 
-    def _fields(self, exclude:list[str]=[]) -> list[str]:
+    def _fields(self, exclude: list[str] = []) -> list[str]:
         return [f.name for f in fields(self) if f.name not in exclude]
 
-    def to_map(self) -> dict[str, str|list[str]]:
+    def to_map(self) -> dict[str, str | list[str]]:
         fieldmap = {
-            attr: getattr(self, attr)
-            for attr in self._fields(exclude=self._exclude)
+            attr: getattr(self, attr) for attr in self._fields(exclude=self._exclude)
         }
         if not any(str(k).strip() for k in self.extensions):
             fieldmap.pop("extensions", None)
@@ -61,8 +63,7 @@ class SerpResult:
     def to_json(self) -> str:
         payload = {
             self.name: [
-                item.to_map() for item in
-                sorted(self.items, key=lambda k: k.rank)
+                item.to_map() for item in sorted(self.items, key=lambda k: k.rank)
             ]
         }
         dump = json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=False)
@@ -70,15 +71,11 @@ class SerpResult:
             dump += "\n"
         return dump
 
+
 class SerpScraper:
     """"""
 
-    def __init__(
-        self,
-        *,
-        config: TargetConfig,
-        strategy: Strategy[SerpResult]
-    ):
+    def __init__(self, *, config: TargetConfig, strategy: Strategy[SerpResult]):
         self.config = config
         self.strategy = strategy
 
@@ -95,7 +92,7 @@ class SerpScraper:
         serp_items = []
         for rank, node in enumerate(tiles):
             _href = node.find("a")
-            link = f"https://www.google.com{_href.get("href", "")}"
+            link = f"https://www.google.com{_href.get('href', '')}"
             name = node.find(class_=cfg.name_tag_class).get_text()
             year = node.find(class_=cfg.year_tag_class).get_text()
             _img = node.find("img", class_=cfg.image_tag_class)
@@ -114,7 +111,6 @@ class SerpScraper:
         return SerpResult(name=cfg.group_name, items=serp_items)
 
     def _extract_via_selectors(self, soup: BeautifulSoup) -> SerpResult:
-
         """
         Use CSS selectors. Talk to Alfred.
         """

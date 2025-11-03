@@ -3,6 +3,7 @@ from pkg.src.static_strategy import (
     _RE_FN_PATTERN,
 )
 
+
 def test_function_call_regex():
     valid_permutations = [
         "_setImagesSrc(ii,r,s)",
@@ -11,14 +12,12 @@ def test_function_call_regex():
         "_setImagesSrc(r,s,ii)",
         "_setImagesSrc(s,ii,r)",
         "_setImagesSrc(s,r,ii)",
-
         "_setImagesSrc( ii,r,s)",
         "_setImagesSrc(ii ,s,r)",
         "_setImagesSrc(r,ii ,s)",
         "_setImagesSrc(r,s, ii)",
         "_setImagesSrc(s, ii,r)",
         "_setImagesSrc(s,r,ii)",
-
         "_setImagesSrc(ii,r ,s)",
         "_setImagesSrc(ii,s,r)",
         "_setImagesSrc(r, ii,s)",

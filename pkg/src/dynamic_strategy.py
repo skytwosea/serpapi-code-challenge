@@ -23,13 +23,11 @@ finalize() is not currently expected to do anything. It should
 return what it has been passed.
 """
 
+
 class DynamicStrategy:
-    
     def __init__(self):
         pass
 
-    def prepare(self, html: bytes) -> BeautifulSoup:
-        ...
+    def prepare(self, html: bytes) -> BeautifulSoup: ...
 
-    def finalize(self, intermediate: SerpResult) -> SerpResult:
-        ...
+    def finalize(self, intermediate: SerpResult) -> SerpResult: ...

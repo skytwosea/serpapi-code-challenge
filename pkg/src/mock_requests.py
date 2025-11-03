@@ -57,6 +57,7 @@ def _defaults_root() -> Traversable:
 
 class MockRequestsError(Exception):
     """Generic error class for this module."""
+
     pass
 
 
@@ -78,7 +79,6 @@ class MockRequests:
     # instance attributes, as slots
     __slots__ = ["_header", "_content", "_status_code"]
 
-
     def __init__(
         self,
         *,
@@ -91,9 +91,15 @@ class MockRequests:
         self._status_code = status_code
 
     @classmethod
-    def read(cls: type[Self], header_source_path: Path, content_source_path: Path) -> Self:
-        assert header_source_path.exists(), f"header source path not found: {header_source_path}"
-        assert content_source_path.exists(), f"content source path not found: {content_source_path}"
+    def read(
+        cls: type[Self], header_source_path: Path, content_source_path: Path
+    ) -> Self:
+        assert header_source_path.exists(), (
+            f"header source path not found: {header_source_path}"
+        )
+        assert content_source_path.exists(), (
+            f"content source path not found: {content_source_path}"
+        )
 
         _hdir = header_source_path.parent
         _cdir = content_source_path.parent
@@ -105,26 +111,28 @@ class MockRequests:
             _header_root=_hdir,
             _content_root=_cdir,
             _header_name=_hname,
-            _content_name=_cname
+            _content_name=_cname,
         )
 
     @classmethod
     def from_defaults(cls: type[Self]) -> Self:
         _root = _defaults_root()
-        assert _root.is_dir(), f"Exception with default files root: directory not found: {_root}"
+        assert _root.is_dir(), (
+            f"Exception with default files root: directory not found: {_root}"
+        )
         return cls._reader(
             _header_root=_root,
             _content_root=_root,
             _header_name=cls._header_default_filename,
-            _content_name=cls._content_default_filename
+            _content_name=cls._content_default_filename,
         )
 
     @classmethod
     def _reader(
         cls: type[Self],
         *,
-        _header_root: Path|Traversable,
-        _content_root: Path|Traversable,
+        _header_root: Path | Traversable,
+        _content_root: Path | Traversable,
         _header_name: str,
         _content_name: str,
     ) -> Self:
@@ -133,7 +141,9 @@ class MockRequests:
         Default data source is found at pkg/files/
         """
         try:
-            header_text = _header_root.joinpath(_header_name).read_text(encoding="utf-8")
+            header_text = _header_root.joinpath(_header_name).read_text(
+                encoding="utf-8"
+            )
             header = json.loads(header_text)
             content = _content_root.joinpath(_content_name).read_bytes()
         except json.JSONDecodeError as e:

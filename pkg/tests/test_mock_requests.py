@@ -10,6 +10,7 @@ from pkg import FILES
 import json
 from textwrap import dedent
 
+
 @pytest.fixture
 def good_json_filler():
     return dedent("""\
@@ -32,6 +33,7 @@ def good_json_filler():
             }
         }
     """)
+
 
 @pytest.fixture
 def bad_json_filler():
@@ -56,8 +58,10 @@ def bad_json_filler():
         }
     """)
 
+
 def test_defaults_root():
     assert isinstance(_defaults_root(), Traversable)
+
 
 def test_read(tmp_path, good_json_filler):
     content_text = "In a hole in the ground there lived a Hobbit."
@@ -79,7 +83,10 @@ def test_read(tmp_path, good_json_filler):
     )
 
     assert [k in {"famous_painters", "famous_musicians"} for k in mr._header.keys()]
-    assert mr._content.decode(encoding="utf-8") == "In a hole in the ground there lived a Hobbit."
+    assert (
+        mr._content.decode(encoding="utf-8")
+        == "In a hole in the ground there lived a Hobbit."
+    )
     assert mr._status_code == 200
 
 
@@ -89,6 +96,7 @@ def test_from_defaults():
     assert mr._header["Server"] == "gws"
     assert isinstance(mr._content, bytes)
 
+
 def test_get():
     mr = MockRequests.from_defaults()
     response = mr.get()
@@ -97,23 +105,22 @@ def test_get():
     assert response.header["Server"] == "gws"
     assert isinstance(response.content, bytes)
 
+
 def test_set_defaults():
     other_file = "config.json"
     MockRequests._set_default_filenames(header_filename=other_file)
     mr = MockRequests.from_defaults()
-    config_keys = json.loads(
-        FILES.joinpath(other_file).read_text(encoding="utf-8")
-    )
+    config_keys = json.loads(FILES.joinpath(other_file).read_text(encoding="utf-8"))
     assert [k in config_keys for k in mr._header.keys()]
+
 
 def test_set():
     mr = MockRequests.from_defaults()
     assert isinstance(mr._content, bytes)
-    mr._set(
-        attr="_content",
-        val="In a hole in the ground there lived a Hobbit.")
+    mr._set(attr="_content", val="In a hole in the ground there lived a Hobbit.")
     assert isinstance(mr._content, str)
     assert mr._content == "In a hole in the ground there lived a Hobbit."
+
 
 def test_bad_json_exeption(tmp_path, good_json_filler, bad_json_filler):
     t_content = "In a hole in the ground there lived a Hobbit."
@@ -134,20 +141,14 @@ def test_bad_json_exeption(tmp_path, good_json_filler, bad_json_filler):
     with open(bad_content_file, "w") as f:
         f.write(t_content)
 
-    with pytest.raises(
-        MockRequestsError,
-        match=f"Could not parse json payload*"
-    ):
+    with pytest.raises(MockRequestsError, match=f"Could not parse json payload*"):
         _ = MockRequests._reader(
             _header_root=tmp_path,
             _content_root=tmp_path,
             _header_name=broken_json_fname,
             _content_name=bad_content_file,
         )
-    with pytest.raises(
-        MockRequestsError,
-        match=f"Default file not found*"
-    ):
+    with pytest.raises(MockRequestsError, match=f"Default file not found*"):
         _ = MockRequests._reader(
             _header_root=tmp_path,
             _content_root=tmp_path,

@@ -13,84 +13,76 @@ from pkg.src.serp_scraper import (
 )
 from pkg.src.strategy_protocol import Strategy
 
+
 @pytest.fixture
 def serp_item():
     return SerpItem(
-        rank = 0,
-        name = "this",
-        extensions = ["here"],
-        link = "is",
-        img_id = "a",
-        image = "test",
+        rank=0,
+        name="this",
+        extensions=["here"],
+        link="is",
+        img_id="a",
+        image="test",
     )
+
 
 @pytest.fixture
 def si_map():
-    return {
-      "name": "this",
-      "extensions": [
-        "here"
-      ],
-      "link": "is",
-      "image": "test"
-    }
+    return {"name": "this", "extensions": ["here"], "link": "is", "image": "test"}
+
 
 @pytest.fixture
 def sr_json():
     return dedent("""\
+    {
+      "TestName": [
         {
-          "TestName": [
-            {
-              "name": "this",
-              "extensions": [
-                "here"
-              ],
-              "link": "is",
-              "image": "test"
-            }
-          ]
+          "name": "this",
+          "extensions": [
+            "here"
+          ],
+          "link": "is",
+          "image": "test"
         }
+      ]
+    }
     """)
+
 
 @pytest.fixture
 def html_as_bytes():
     return FILES.joinpath("injection_script_example.html").read_bytes()
 
+
 def test_SerpItem_fields(serp_item):
-    assert (
-        serp_item._fields()
-        == [f.name for f in fields(SerpItem)]
-    )
+    assert serp_item._fields() == [f.name for f in fields(SerpItem)]
     exclusions = ["extensions", "name"]
-    assert (
-        serp_item._fields(exclude=exclusions)
-        == [
-            f.name for f in fields(SerpItem)
-            if f.name not in exclusions
-        ]
-    )
+    assert serp_item._fields(exclude=exclusions) == [
+        f.name for f in fields(SerpItem) if f.name not in exclusions
+    ]
+
 
 def test_SerpItem_to_map(serp_item, si_map):
     assert serp_item.to_map() == si_map
+
 
 def test_SerpResult_to_json(serp_item, sr_json):
     sr = SerpResult(
         name="TestName",
         items=[serp_item],
     )
-    assert sr.to_json() == json.dumps(json.loads(sr_json))
+    assert sr.to_json() == json.dumps(json.loads(sr_json), indent=2) + "\n"
 
-@pytest.mark.xfail(reason="parameter not implemented")
+
 def test_expect_tag(html_as_bytes):
     soup = BeautifulSoup(html_as_bytes, "html.parser")
     script_tag = soup.find("script")
-    assert script_tag is not None  # get pyright to shut up...
+    assert script_tag is not None  # make pyright happy
     script_text = script_tag.get_text()
-    # another call to _set_default_filename is altering the setting
-    # for the entire test runtime... ensure it's set correctly here
+
     ScraperConfigHandler._set_default_filename(config_filename="config.json")
     tgt = ScraperConfigHandler.from_defaults().select("famous_painters")
-    scraper = SerpScraper(config=tgt, hydration_strategy=None)
+    scraper = SerpScraper(config=tgt, strategy=None)
     assert scraper._expect_tag(script_tag) == script_tag
     with pytest.raises(TypeError):
         scraper._expect_tag(script_text)

@@ -63,12 +63,12 @@ class ScraperConfigHandlerError(Exception):
     """raised when ScraperConfigHandler fails to load or process
     json config file
     """
+
     pass
 
 
 @dataclass(frozen=True, slots=True)
 class TargetConfig:
-
     group_name: str
     tiles_tag_class: str
     tiles_tag_attr: str
@@ -79,11 +79,12 @@ class TargetConfig:
 
 
 class ScraperConfigHandler:
-
     _config_default_filename: ClassVar[str] = "config.json"
 
     # _config: dict[str, Any]|None
-    __slots__ = ["_config",]
+    __slots__ = [
+        "_config",
+    ]
 
     def __init__(self, *, config: dict[str, Any]):
         self._config = config
@@ -104,16 +105,13 @@ class ScraperConfigHandler:
     def from_defaults(cls: type[Self]) -> Self:
         _root = _defaults_root()
         assert _root.is_dir()
-        return cls._reader(
-            _root=_root,
-            _fname=cls._config_default_filename
-        )
+        return cls._reader(_root=_root, _fname=cls._config_default_filename)
 
     @classmethod
     def _reader(
         cls: type[Self],
         *,
-        _root: Path|Traversable,
+        _root: Path | Traversable,
         _fname: str,
     ) -> Self:
         try:
@@ -124,9 +122,7 @@ class ScraperConfigHandler:
                 f"Could not parse json payload: {_fname}"
             ) from e
         except (FileNotFoundError, UnboundLocalError) as e:
-            raise ScraperConfigHandlerError(
-                f"Default file not found\n{str(e)}"
-            ) from e
+            raise ScraperConfigHandlerError(f"Default file not found\n{str(e)}") from e
         return cls(config=config)
 
     @property
@@ -148,10 +144,7 @@ class ScraperConfigHandler:
             )
         target_map = self._config[key]
         try:
-            _mapped = {
-                f: target_map[f] for f in
-                (f.name for f in fields(TargetConfig))
-            }
+            _mapped = {f: target_map[f] for f in (f.name for f in fields(TargetConfig))}
             return TargetConfig(**_mapped)
         except KeyError as e:
             raise ScraperConfigHandlerError(
@@ -162,7 +155,7 @@ class ScraperConfigHandler:
     def _set_default_filename(
         cls,
         *,
-        config_filename: str|None = None,
+        config_filename: str | None = None,
     ) -> None:
         """Class setter for changing default filenames prior to initialization"""
         if config_filename:
