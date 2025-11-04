@@ -52,4 +52,4 @@ build-iPhoneSimulator/
 # PENNER_SOLUTION: added ignores for Python and UV
 __pycache__/
 uv.lock
-
+attic/*

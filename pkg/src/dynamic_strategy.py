@@ -1,5 +1,11 @@
+from typing import final
 from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+
 from pkg.src.serp_scraper import SerpResult
+from pkg.src.strategy_protocol import Strategy
 
 """
 This module implements a strategy for the Strategy protocol
@@ -24,10 +30,38 @@ return what it has been passed.
 """
 
 
-class DynamicStrategy:
+@final
+class DynamicStrategy(Strategy[SerpResult]):
     def __init__(self):
         pass
 
-    def prepare(self, html: bytes) -> BeautifulSoup: ...
+    def prepare(self, html: bytes) -> BeautifulSoup:
+        return self._hydrate_in_headless_browser(html)
 
-    def finalize(self, intermediate: SerpResult) -> SerpResult: ...
+    def finalize(self, serp_result: SerpResult) -> SerpResult:
+        return serp_result
+
+    def _hydrate_in_headless_browser(self, b_html: bytes) -> BeautifulSoup:
+        html = b_html.decode("utf-8", "replace")
+        opts = Options()
+        opts.add_argument("--headless=new")
+        opts.add_argument("--window-size=1200,2400")
+        with webdriver.Chrome(options=opts) as d:
+            d.get("about:blank")
+            d.execute_cdp_cmd("Page.enable", {})
+            fid = d.execute_cdp_cmd("Page.getFrameTree", {})["frameTree"]["frame"]["id"]
+            d.execute_cdp_cmd("Page.setDocumentContent", {"frameId": fid, "html": html})
+            WebDriverWait(d, 10).until(
+                lambda x: d.execute_script("return document.readyState") == "complete"
+            )
+            for _ in range(12):
+                d.execute_script(
+                    "window.scrollBy(0, 900);window.dispatchEvent(new Event('scroll'))"
+                )
+            WebDriverWait(d, 10).until(
+                lambda x: d.execute_script(
+                    "return Array.from(document.images).every(i=>i.complete||i.currentSrc||i.srcset||i.src)"
+                )
+            )
+            out = d.execute_script("return document.documentElement.outerHTML")
+        return BeautifulSoup(out, "html.parser")

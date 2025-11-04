@@ -1,9 +1,11 @@
-from importlib.resources.abc import Traversable
-from dataclasses import dataclass, fields
-from typing import Any, Self, ClassVar
-from pathlib import Path
-from pkg import FILES
 import json
+from pathlib import Path
+from typing import Any, Self, ClassVar
+from dataclasses import dataclass, fields
+from importlib.resources.abc import Traversable
+
+from pkg import FILES
+from pkg.src.errors import ScraperConfigHandlerError
 
 """ScraperConfigHandler module: scraper configuration I/O
 
@@ -59,14 +61,6 @@ def _defaults_root() -> Traversable:
     return FILES
 
 
-class ScraperConfigHandlerError(Exception):
-    """raised when ScraperConfigHandler fails to load or process
-    json config file
-    """
-
-    pass
-
-
 @dataclass(frozen=True, slots=True)
 class TargetConfig:
     group_name: str
@@ -81,7 +75,6 @@ class TargetConfig:
 class ScraperConfigHandler:
     _config_default_filename: ClassVar[str] = "config.json"
 
-    # _config: dict[str, Any]|None
     __slots__ = [
         "_config",
     ]

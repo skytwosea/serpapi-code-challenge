@@ -1,9 +1,11 @@
-from importlib.resources.abc import Traversable
-from typing import Any, Self, ClassVar
-from dataclasses import dataclass
-from pathlib import Path
-from pkg import FILES
 import json
+from pathlib import Path
+from dataclasses import dataclass
+from typing import Any, Self, ClassVar
+from importlib.resources.abc import Traversable
+
+from pkg import FILES
+from pkg.src.errors import MockRequestsError
 
 """MockRequests module: simple mocking for requests.get functionality
 
@@ -53,12 +55,6 @@ Example
 
 def _defaults_root() -> Traversable:
     return FILES
-
-
-class MockRequestsError(Exception):
-    """Generic error class for this module."""
-
-    pass
 
 
 @dataclass(frozen=True, slots=True)
@@ -138,7 +134,7 @@ class MockRequests:
     ) -> Self:
         """Constructor that uses package default data
 
-        Default data source is found at pkg/files/
+        Default data source is found at pkg/ref
         """
         try:
             header_text = _header_root.joinpath(_header_name).read_text(
