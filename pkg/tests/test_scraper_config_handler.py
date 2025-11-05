@@ -1,5 +1,4 @@
 from importlib.resources.abc import Traversable
-from _pytest import config
 import pytest
 from pkg.src.scraper_config_handler import (
     _defaults_root,

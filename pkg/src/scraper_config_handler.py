@@ -17,8 +17,10 @@ Initialization
 --------------
 You may choose to initialize by supplying a valid configuration
 mapping to the ScraperConfigHandler class.
+
 Use default values by calling the classmethod constructor
 ScraperConfigHandler.from_defaults()
+
 Load any valid JSON file with ScraperConfigHandler.read(path)
 
 Defaults

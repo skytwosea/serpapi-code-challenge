@@ -10,16 +10,18 @@ from pkg.src.errors import MockRequestsError
 """MockRequests module: simple mocking for requests.get functionality
 
 This module's design is very similar to the design of the
-mock_requests module; they perform similar tasks. There is
-potential to abstract these two modules.
+scraper_config_handler module; they perform similar tasks.
+There is potential to abstract these two modules.
 
 Initialization
 --------------
 You may choose to initialize by supplying valid header,
 content, and optional status_code parameters to the
 MockRequests class.
+
 Use default values by calling the classmethod constructor
 MockRequests.from_defaults()
+
 Load any valid header (JSON) and/or content (bytes) files
 with MockRequests.read(path, path)
 
@@ -32,7 +34,7 @@ These class attributes are private. They can be modified by
 invoking MockRequests._set_default_filenames(filename, filename)
 
 The class constructors read() and from_defaults() delegate to
-the private method _reader(). For testing, the filepath root
+the private constructor _reader(). For testing, the filepath root
 can be changed by invoking this method directly.
 
 MockRequests._set() is available as a testing tool for

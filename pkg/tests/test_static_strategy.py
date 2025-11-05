@@ -1,4 +1,3 @@
-import re
 from pkg.src.static_strategy import (
     _RE_FN_PATTERN,
 )

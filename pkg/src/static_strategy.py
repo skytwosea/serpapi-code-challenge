@@ -22,9 +22,11 @@ Here, we implement the static approach.
 
 prepare() leaves the html unaltered and unrendered. It
 initializes a BeautifulSoup object and returns it with no
-modifications. It also returns a mapping of image ID values
+modifications. It also creates a mapping of image ID values
 to URLs, which is created by scraping, filtering, and parsing
-the <script/ tags in the soup.
+the <script/ tags in the soup. This edits map is stored as an
+attribute of the StaticStrategy class, and is referenced when
+finalize() is invoked.
 
 finalize() takes the SerpResult object produced by the
 call to SerpScraper.scrape() and edits the list of SerpItems

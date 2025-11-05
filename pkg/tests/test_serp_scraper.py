@@ -82,7 +82,7 @@ def test_expect_tag(html_as_bytes):
 
     ScraperConfigHandler._set_default_filename(config_filename="config.json")
     tgt = ScraperConfigHandler.from_defaults().select("famous_painters")
-    scraper = SerpScraper(config=tgt, strategy=None)
+    scraper = SerpScraper(config=tgt, strategy=None)  # TODO: improve this test
     assert scraper._expect_tag(script_tag) == script_tag
     with pytest.raises(TypeError):
         scraper._expect_tag(script_text)

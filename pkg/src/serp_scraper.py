@@ -67,6 +67,7 @@ class SerpScraper:
         serp_items = []
         for rank, node in enumerate(tiles):
             _href = node.find("a")
+            # TODO: lift this URL prefix out
             link = f"https://www.google.com{_href.get('href', '')}"
             name = node.find(class_=cfg.name_tag_class).get_text()
             year = node.find(class_=cfg.year_tag_class).get_text()
