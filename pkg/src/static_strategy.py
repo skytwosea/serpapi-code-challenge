@@ -53,22 +53,22 @@ class StaticStrategy(Strategy[SerpResult]):
 
     def finalize(self, serp_result: SerpResult) -> SerpResult:
         assert self.edits_map is not None
-        for item in serp_result.items:
-            item.image = self.edits_map.get(item.img_id, item.image)
+        self._inject_valid_urls(serp_result)
         return serp_result
 
-    def _inject_valid_urls(self, partial: SerpResult, mapping: dict[str, str]) -> None:
-        for tile in partial.items:
-            tile.image = mapping[tile.img_id]
+    def _inject_valid_urls(self, unhydrated: SerpResult) -> None:
+        assert self.edits_map is not None
+        for serp_item in unhydrated.items:
+            serp_item.image = self.edits_map.get(serp_item.img_id, serp_item.image)
 
-    def _quickcheck(self, text) -> bool:
+    def _re_check(self, text) -> bool:
         return bool(_RE_FN_PATTERN.search(text))
 
     def _build_edits_map(self, soup: BeautifulSoup) -> dict[str, str]:
         all_scripts = [
             s.get_text()
             for s in soup.find_all("script")
-            if self._quickcheck(s.get_text())
+            if self._re_check(s.get_text())
         ]
         _emap = {}
         for script in all_scripts:
@@ -77,12 +77,12 @@ class StaticStrategy(Strategy[SerpResult]):
 
     def _extract_script_vars(self, text: str) -> dict[str, str]:
         ast = esprima.parseScript(text)
-        v = SrcInjectorVisitor()
+        v = HydrationScriptASTVisitor()
         v.visit(ast)  # kicks off recursion
         return {i: v.s_val for i in v.ids if v.s_val}
 
 
-class SrcInjectorVisitor(Visitor):
+class HydrationScriptASTVisitor(Visitor):
     def __init__(self):
         self.s_val: str | None = None
         self.ids: list[str] = []
